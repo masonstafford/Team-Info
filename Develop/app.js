@@ -1,40 +1,118 @@
-const Manager = require('./lib/Manager');
-const Engineer = require('./lib/Engineer');
-const Intern = require('./lib/Intern');
-const inquirer = require('inquirer');
+const inquirer = require("inquirer");
+const fs = require("fs");
+const Manager = require("./lib/Manager");
+const Intern = require("./lib/Intern");
 const path = require('path');
-const fs = require('fs');
+const Engineer = require("./lib/Engineer");
 
 const OUTPUT_DIR = path.resolve(__dirname, 'output');
 const outputPath = path.join(OUTPUT_DIR, 'team.html');
 
 const render = require('./lib/htmlRenderer');
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
 
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
+async function start() {
+    console.log("Please build your team");
 
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work!```
+    var myTeam = [];
+    var myTeamNumberSize;
 
-const init = () => {};
+    await inquirer.prompt(
+        {
+            type: "number",
+            message: "How many people are in your team?",
+            name: "noOfTeamMem"
+        }
+    ).then((data) => {
+        myTeamNumberSize = data.noOfTeamMem + 1;
+    });
 
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
+    if (myTeamNumberSize === 0) {
+        console.log("Hmmmmm, no team then? Ok!");
+        return;
+    }
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above to target this location.
+    for (i = 1; i < myTeamNumberSize; i++) {
+        let name;
+        let id;
+        let title;
+        let email;
 
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not. The fs npm package may have methods to check if a directory exists, and they
-// may also have methods to create a directory that doesn't...
+        await inquirer.prompt([
+            {
+                type: "input",
+                message: `Please enter employee (${i})'s name?`,
+                name: "name"
+            },
+            {
+                type: "input",
+                message: `Please enter employee (${i})'s id?`,
+                name: "id"
+            },
+            {
+                type: "input",
+                message: `Please enter employee (${i})'s Email?`,
+                name: "email"
+            },
+            {
+                type: "list",
+                message: `Please enter employee (${i})'s job role?`,
+                name: "title",
+                choices: ["Engineer", "Intern", "Manager"]
+            }
+        ]).then((data) => {
+            name = data.name;
+            id = data.id;
+            title = data.title;
+            email = data.email;
+        });
 
-init();
+        switch (title) {
+            case "Manager":
+                await inquirer.prompt([
+                    {
+                        type: "input",
+                        message: "Please enter the Manager's office number?",
+                        name: "officeNo"
+                    }
+                ]).then((data) => {
+                    const manager = new Manager(name, id, email, data.officeNo);
+                    teamMember = fs.readFileSync("templates/manager.html");
+                    myTeam = myTeam + "\n" + eval('`' + teamMember + '`');
+                }); break;
+
+            case "Intern":
+                await inquirer.prompt([
+                    {
+                        type: "input",
+                        message: "Please enter the interns school",
+                        name: "school"
+                    }
+                ]).then((data) => {
+                    const intern = new Intern(name, id, email, data.school);
+                    teamMember = fs.readFileSync("templates/intern.html");
+                    myTeam = myTeam + "\n" + eval('`' + teamMember + '`');
+                }); break;
+
+            case "Engineer":
+                await inquirer.prompt([
+                    {
+                        type: "input",
+                        message: "Please enter the engineer's GitHub?",
+                        name: "github"
+                    }
+                ]).then((data) => {
+                    const engineer = new Engineer(name, id, email, data.github);
+                    teamMember = fs.readFileSync("templates/engineer.html");
+                    myTeam = myTeam + "\n" + eval('`' + teamMember + '`');
+                }); break;
+        }
+    }
+    fs.writeFile(outputPath, render(myTeam), function (err) {
+        console.log(myTeam)
+        if (err) {
+            return console.log(err);
+        }
+    });
+}
+start();

@@ -2,7 +2,7 @@
 class Employee {
     constructor(name, id, email){
         this.name = name,
-        thsi.id = id,
+        this.id = id,
         this.email = email
     }
     getName() {
