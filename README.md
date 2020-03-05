@@ -9,6 +9,7 @@
   
 * [Application-Photos](#Application-Photos)
 * [Installation](#Installation)
+* [Run-App](#Run-App)
 * [License](#License)
 * [Tests](#Tests)
 * [Questions](#Questions)
@@ -21,11 +22,16 @@
 ![Screen Shot 2020-03-04 at 10 54 33 PM](https://user-images.githubusercontent.com/46834613/75946574-707d6880-5e6b-11ea-9158-5a3bbae7b9f1.png)
 ![Screen Shot 2020-03-04 at 10 55 43 PM](https://user-images.githubusercontent.com/46834613/75946576-707d6880-5e6b-11ea-9816-28df893de901.png)
 
-
 ## Installation
 
 ```
 npm i
+```
+
+## Run app using the following command: 
+
+```
+node app.js
 ```
 
 ## License
