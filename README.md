@@ -9,7 +9,7 @@
   
 * [Application-Photos](#Application-Photos)
 * [Installation](#Installation)
-* [Run-App](#Run-App)
+* [Run-App](#Run)
 * [License](#License)
 * [Tests](#Tests)
 * [Questions](#Questions)
