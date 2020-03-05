@@ -10,146 +10,130 @@ const outputPath = path.join(OUTPUT_DIR, 'team.html');
 
 const render = require('./lib/htmlRenderer');
 
+const myTeam = [];
+const idArr = [];
 
-async function start() {
-    console.log("Please build your team");
 
-    const myTeam = [];
+const init = () => {
+    const createManager = () => {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: `What is you manager's name?`,
+                name: "name"
+            },
+            {
+                type: "input",
+                message: `What is you manager's id?`,
+                name: "id"
+            },
+            {
+                type: "input",
+                message: `What is you manager's Email?`,
+                name: "email"
+            },
+            {
+                type: "input",
+                message: `What is you manager's office number?`,
+                name: "officeNumber"
+            }
+        ]).then((data) => {
+            const manager = new Manager(data.name, data.id, data.email, data.officeNumber);
+            myTeam.push(manager);
+            idArr.push(data.id);
+            createTeamMember();
+        });
+    }
+    
+    const createEngineer = () => {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "What is your engineer's name?",
+                name: "name"
+            },
+            {
+                type: "input",
+                message: "What is your engineer's id?",
+                name: "id"
+            },
+            {
+                type: "input",
+                message: "What is your engineer's email?",
+                name: "email"
+            },
+            {
+                type: "input",
+                message: "What is your engineer's GitHub?",
+                name: "github"
+            }
+        ]).then((data) => {
+            const engineer = new Engineer(data.name, data.id, data.email, data.github);
+            myTeam.push(engineer);
+            idArr.push(data.id);
+            createTeamMember();
+        });
+    }
 
-   await inquirer.prompt([
-        {
-            type: "input",
-            message: `What is you manager's first name?`,
-            name: "name"
-        },
-        {
-            type: "input",
-            message: `What is you manager's id?`,
-            name: "id"
-        },
-        {
-            type: "input",
-            message: `What is you manager's Email?`,
-            name: "email"
-        },
-        {
-            type: "input",
-            message: `What is you manager's office number?`,
-            name: "email"
-        },
-        {
-            type: "list",
-            message: `Which type of team member would you like to add?`,
-            name: "title",
-            choices: ["Engineer", "Intern", "Done"]
+    const createIntern = () => {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "What is your intern's name?",
+                name: "name"
+            },
+            {
+                type: "input",
+                message: "What is your intern's id?",
+                name: "id"
+            },
+            {
+                type: "input",
+                message: "What is your intern's email?",
+                name: "email"
+            },
+            {
+                type: "input",
+                message: "What is your intern's school?",
+                name: "school"
+            }
+        ]).then((data) => {
+            const intern = new Intern(data.name, data.id, data.email, data.school);
+            myTeam.push(intern);
+            idArr.push(data.id);
+            createTeamMember();
+        });
+    }
+
+    const createTeamMember = () => {
+        inquirer.prompt([
+            {
+                type: "list",
+                message: "What kind of team memver would you like to add?",
+                name: "createId",
+                choices: ["Engineer", "Intern", "I would not like to add another team member"]
+            }
+        ]).then(choices => {
+            switch (choices.createId) {
+                case "Engineer":
+                    createEngineer();
+                    break;
+                case "Intern":
+                    createIntern();
+                    break;   
+                default:
+                    makeTheTeam()
+                    console.log("Created dream team!");      
+            }
+        })
+    }
+    function makeTheTeam() {
+        if(!fs.existsSync(OUTPUT_DIR)) {
+            fs.mkdirSync(OUTPUT_DIR)
         }
-    ]).then((data) => {
-        const intern = new Intern(name, id, email, data.school);
-        teamMember = fs.readFileSync("templates/intern.html");
-        myTeam = myTeam + "\n" + eval('`' + teamMember + '`');
-    });
-
-    switch (title) {
-
-        case "Intern":
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: "What is your intern's name?",
-                    name: "name"
-                },
-                {
-                    type: "input",
-                    message: "What is your intern's id?",
-                    name: "id"
-                },
-                {
-                    type: "input",
-                    message: "What is your intern's email?",
-                    name: "email"
-                },
-                {
-                    type: "input",
-                    message: "What is your intern's school?",
-                    name: "school"
-                },
-                {
-                    type: "list",
-                    message: `Which type of team member would you like to add?`,
-                    name: "title",
-                    choices: ["Engineer", "Intern", "Done"]
-                }
-            ]).then((data) => {
-                const intern = new Intern(name, id, email, data.school);
-                teamMember = fs.readFileSync("templates/intern.html");
-                myTeam = myTeam + "\n" + eval('`' + teamMember + '`');
-            }); break;
-
-        case "Engineer":
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: "What is your engineer's name?",
-                    name: "name"
-                },
-                {
-                    type: "input",
-                    message: "What is your engineer's id?",
-                    name: "id"
-                },
-                {
-                    type: "input",
-                    message: "What is your engineer's email?",
-                    name: "email"
-                },
-                {
-                    type: "input",
-                    message: "What is your engineer's GitHub?",
-                    name: "github"
-                },
-                {
-                    type: "list",
-                    message: `Which type of team member would you like to add?`,
-                    name: "title",
-                    choices: ["Engineer", "Intern", "Done"]
-                }
-            ]).then((data) => {
-                const engineer = new Engineer(name, id, email, data.github);
-                teamMember = fs.readFileSync("templates/engineer.html");
-                myTeam = myTeam + "\n" + eval('`' + teamMember + '`');
-            }); break;
+        fs.writeFileSync(outputPath, render(myTeam), "utf8");
     }
-}
-fs.writeFile(outputPath, render(myTeam), function (err) {
-    console.log(myTeam)
-    if (err) {
-        return console.log(err);
-    }
-});
-start();
+    createManager();
+};
 
-
-
-
-    // var myTeamNumberSize;
-
-    // inquirer.prompt(
-    //     {
-    //         type: "number",
-    //         message: "How many people are in your team?",
-    //         name: "noOfTeamMem"
-    //     }
-    // ).then((data) => {
-    //     myTeamNumberSize = data.noOfTeamMem + 1;
-    // });
-
-    // if (myTeamNumberSize === 0) {
-    //     console.log("Hmmmmm, no team then? Ok!");
-    //     return;
-    // }
-
-    // for (i = 1; i < myTeamNumberSize; i++) {
-    //     let name;
-    //     let id;
-    //     let title;
-    //     let email;
+init();
